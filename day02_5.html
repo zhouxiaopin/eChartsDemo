@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>广州公交路线 - 线特效</title>
+    <link rel="stylesheet" href="css/leaflet.css"/>
+    <link rel="stylesheet" href="css/animate.min.css"/>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #main{
+            width: 500px;
+            height: 500px;
+            background: #0078A8;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg opacityShow" id="earth_bg"></div>
+    <div class="earth" id="earth" style="background-position-x: 297px; cursor: -webkit-grab;">
+        <div class="mask"></div>
+        <div class="gz-ditu animated zoomIn delyShow gzdt-bg4" id="map_bg"></div>
+        <div id="box">
+            <div id="map_box" class="gzmap animated fadeIn" style="-webkit-tap-highlight-color: transparent; user-select: none; background: none;" _echarts_instance_="ec_1515744750700"><div style="position: relative; overflow: hidden; width: 1323px; height: 1323px; padding: 0px; margin: 0px; border-width: 0px;"><canvas width="1323" height="1323" data-zr-dom-id="zr_0" style="position: absolute; left: 0px; top: 0px; width: 1323px; height: 1323px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div></div>
+        </div>
+        <!-- <div class="map-title" id="map_title">出租车</div> -->
+    </div>
+    <script src="js/echarts/echarts.min.js"></script>
+    <script src="js/echarts/map/world.js"></script>
+    <script type="text/javascript">
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('mask'));
+        var option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}'
+            },
+            geo: [{
+                name: '世界地图',
+                type: 'map',
+                map: 'world',
+                zoom: 1,
+                selectedMode: 'single',
+                itemStyle: {
+                    normal: {
+                        areaColor: 'rgba(53,245,224,0.3)',
+                        borderColor: 'rgba(53,245,224,0.5)',
+                        borderWidth: 1
+                    },
+                    emphasis: {
+                        areaColor: 'rgba(53,245,224,0.4)'
+                    }
+                },
+                label: {
+                    normal: {
+                        show: false
+                    },
+                    emphasis: {
+                        show: false
+                    }
+                }
+            }],
+            series: []
+        };
+
+        myChart.setOption(option);
+    </script>
+</body>
+</html>

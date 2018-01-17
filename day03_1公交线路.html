@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>公交线路</title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #main{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div id="main"></div>
+    <script src="js/echarts/echarts.min.js"></script>
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/guangz-traffic.js"></script>
+    <script src="js/echarts/map/guangzhou.js"></script>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        var option = {
+            backgroundColor: 'none',
+            geo: {
+                map: 'guangzhou',
+                center: [113.3531911431, 23.1264654617],
+                zoom: 10,
+                top: 0,
+                label: {
+                    emphasis: {
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    }
+                },
+                silent: true, //不响应和触发鼠标事件
+                itemStyle: {
+                    normal: {
+                        areaColor: 'rgba(56,227,217,0)',
+                        borderColor: '#38E3D9',
+                        borderWidth: 0
+                    }
+                }
+            },
+            series:[{
+                type: 'lines',
+                symbol: "none",
+                coordinateSystem: 'geo',
+                polyline: true, //是否是多段线
+                data: traffic,
+                lineStyle: {
+                    normal: {
+                        opacity: 0.2,
+                        width: 4
+                    }
+                }
+            }, {
+                type: 'lines',
+                coordinateSystem: 'geo',
+                polyline: true,
+                data: traffic,
+                zlevel: 1,
+                lineStyle: {
+                    normal: {
+                        width: 0.02
+                    }
+                },
+                effect: {
+                    constantSpeed: 70,
+                    show: true,
+                    trailLength: 0.02,
+                    symbolSize: 4
+                }
+            }]
+
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+</body>
+</html>

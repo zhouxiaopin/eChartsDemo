@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>公交线路</title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #main{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div id="main"></div>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=fdv5gclnF2HSnNyKm4Dj3aVuLUGMLUZ1" ></script>
+    <script src="js/echarts/echarts.min.js"></script>
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/guangz-traffic.js"></script>
+    <script src="js/echarts/map/guangzhou.js"></script>
+    <script src="js/echarts/map/bmap.js"></script>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        var option = {
+            bmap: {
+                center: [113.3531911431, 23.1264654617],
+                zoom: 12,
+                roam: true,
+                mapStyle: {
+                    'styleJson': [{
+                        'featureType': 'water',
+                        'elementType': 'all',
+                        'stylers': {
+                            'color': '#031628'
+                        }
+                    }, {
+                        'featureType': 'land',
+                        'elementType': 'geometry',
+                        'stylers': {
+                            'color': '#000102'
+                        }
+                    }, {
+                        'featureType': 'highway',
+                        'elementType': 'all',
+                        'stylers': {
+                            'visibility': 'off'
+                        }
+                    }, {
+                        'featureType': 'arterial',
+                        'elementType': 'geometry.fill',
+                        'stylers': {
+                            'color': '#000000'
+                        }
+                    }, {
+                        'featureType': 'arterial',
+                        'elementType': 'geometry.stroke',
+                        'stylers': {
+                            'color': '#0b3d51'
+                        }
+                    }, {
+                        'featureType': 'local',
+                        'elementType': 'geometry',
+                        'stylers': {
+                            'color': '#000000'
+                        }
+                    }, {
+                        'featureType': 'railway',
+                        'elementType': 'geometry.fill',
+                        'stylers': {
+                            'color': '#000000'
+                        }
+                    }, {
+                        'featureType': 'railway',
+                        'elementType': 'geometry.stroke',
+                        'stylers': {
+                            'color': '#08304b'
+                        }
+                    }, {
+                        'featureType': 'subway',
+                        'elementType': 'geometry',
+                        'stylers': {
+                            'lightness': -70
+                        }
+                    }, {
+                        'featureType': 'building',
+                        'elementType': 'geometry.fill',
+                        'stylers': {
+                            'color': '#000000'
+                        }
+                    }, {
+                        'featureType': 'all',
+                        'elementType': 'labels.text.fill',
+                        'stylers': {
+                            'color': '#857f7f'
+                        }
+                    }, {
+                        'featureType': 'all',
+                        'elementType': 'labels.text.stroke',
+                        'stylers': {
+                            'color': '#000000'
+                        }
+                    }, {
+                        'featureType': 'building',
+                        'elementType': 'geometry',
+                        'stylers': {
+                            'color': '#022338'
+                        }
+                    }, {
+                        'featureType': 'green',
+                        'elementType': 'geometry',
+                        'stylers': {
+                            'color': '#062032'
+                        }
+                    }, {
+                        'featureType': 'boundary',
+                        'elementType': 'all',
+                        'stylers': {
+                            'color': '#465b6c'
+                        }
+                    }, {
+                        'featureType': 'manmade',
+                        'elementType': 'all',
+                        'stylers': {
+                            'color': '#022338'
+                        }
+                    }, {
+                        'featureType': 'label',
+                        'elementType': 'all',
+                        'stylers': {
+                            'visibility': 'off'
+                        }
+                    }]
+                },
+            },
+            series: [{
+                type: 'lines',
+                coordinateSystem: 'bmap',
+                polyline: true,
+                data: traffic,
+                silent: true,
+                lineStyle: {
+                    normal: {
+                        opacity: 0.2,
+                        width: 1
+                    }
+                },
+                progressiveThreshold: 500,
+                progressive: 100
+            }, {
+                type: 'lines',
+                coordinateSystem: 'bmap',
+                polyline: true,
+                data: traffic,
+                lineStyle: {
+                    normal: {
+                        width: 0.02
+                    }
+                },
+                effect: {
+                    constantSpeed: 40,
+                    show: true,
+                    trailLength: 0.02,
+                    symbolSize: 2
+                },
+                zlevel: 1
+            }]
+
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+
+        //百度地图
+        var bmap = myChart.getModel().getComponent('bmap').getBMap();
+        //地图更改缩放级别结束时触发触发此事件
+        bmap.addEventListener('zoomend',function () {
+            baiduCenter = bmap.getCenter();
+            alert(JSON.stringify(baiduCenter));
+        });
+        alert();
+    </script>
+</body>
+</html>
