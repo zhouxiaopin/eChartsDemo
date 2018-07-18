@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>公交线路</title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #main{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div id="main"></div>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=fdv5gclnF2HSnNyKm4Dj3aVuLUGMLUZ1" ></script>
+    <script src="js/echarts/echarts.min.js"></script>
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/guangz-traffic.js"></script>
+    <script src="js/echarts/map/guangzhou.js"></script>
+    <script src="js/echarts/map/bmap.js"></script>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        var uploadedDataURL = "file/busMonitor.json";
+
+        $.get(uploadedDataURL, function(points) {
+            var colorList = ['#778899', '#FFD700', '#7CFC00', "#00BFFF", '#FF8C00', "#FF0000", "#9400D3"];
+            var labels = ["0", "0~10", "10~20", "20~30", "30~50", "50~80", ">80"];
+            var series = labels.map(function(item,index){
+                var name = item;
+                var data = points[name];
+                for (var i in data) {
+                    var tempArr = [];
+                    var tempStr = String(data[i]);
+                    tempArr.push(Number(tempStr.split(',')[0]));
+                    tempArr.push(Number(tempStr.split(',')[1]));
+                    tempArr.push(tempStr.split(',')[2]);
+                    tempArr.push(tempStr.split(',')[3]);
+                    data[i] = tempArr;
+                }
+                var color = colorList[index];
+                return {
+                    name: name,
+                    type: 'effectScatter',
+                    coordinateSystem: 'bmap',
+                    data: data,
+                    showEffectOn: 'render',
+                    rippleEffect: {
+                        brushType: 'stroke'
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: color
+                        }
+                    },
+                    blendMode: 'lighter'
+                }
+            });
+            myChart.setOption(option = {
+                animation: true,
+                bmap: {
+                    center: [125.35, 43.86],
+                    zoom: 12,
+                    roam: true,
+                    mapStyle: {
+                        style: 'dark'
+                    }
+                },
+                legend: {
+                    orient: 'vertical',
+                    bottom: '55',
+                    left: '1',
+                    backgroundColor: "rgba(255,255,255,0.6)",
+                    data: labels.reverse(),
+                    formatter: function(name){
+                        return '速度:' + name + 'km/h';
+                    }
+                },
+                series: series,
+                tooltip: {
+                    formatter: function(params) {
+                        var retStr = '车牌号: ' + params.data[3] + '<br />经度: ' + params.data[0] + '   纬度: ' + params.data[1] + '<br />速度: ' + params.data[2] + '    km/h';
+                        return retStr;
+                    }
+                }
+            });
+        });
+
+        // 使用刚指定的配置项和数据显示图表。
+        //myChart.setOption(option);
+
+        //百度地图
+        // var bmap = myChart.getModel().getComponent('bmap').getBMap();
+        //地图更改缩放级别结束时触发触发此事件
+        // bmap.addEventListener('zoomend',function () {
+        //     baiduCenter = bmap.getCenter();
+        //     alert(JSON.stringify(baiduCenter));
+        //
+        // });
+        alert();
+    </script>
+</body>
+</html>

@@ -179,11 +179,12 @@
         var bmap = myChart.getModel().getComponent('bmap').getBMap();
         //地图更改缩放级别结束时触发触发此事件
         // bmap.addEventListener('zoomend',function () {
-        //     baiduCenter = bmap.getCenter();
+        //     var baiduCenter = bmap.getCenter();
+        //     var circle = new BMap.Circle(baiduCenter,500,{strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5}); //创建圆
+        //     bmap.addOverlay(circle);            //增加圆
         //     alert(JSON.stringify(baiduCenter));
         //
         // });
-        alert();
     </script>
 </body>
 </html>
