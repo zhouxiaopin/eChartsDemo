@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>广州小区</title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #allmap{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+<div id="allmap"></div>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=fdv5gclnF2HSnNyKm4Dj3aVuLUGMLUZ1" ></script>
+<script type="text/javascript" src="./js/jquery-3.1.1.min.js" ></script>
+<script type="text/javascript" src="./js/utils.js" ></script>
+<script type="text/javascript" src="./js/gzVillage.js" ></script>
+<script type="text/javascript" src="./js/gcoord.js" ></script>
+<script type="text/javascript">
+    var temp1 = $.map(gzvVillage.features,function (item) {
+        // console.log(item.attributes.NAME);
+        return {'attributes':item.attributes,'rings':item.geometry.rings[0]};
+    });
+    var gzvVillageData = $.map(temp1,function (item,index) {
+        // console.log(JSON.stringify(item));
+        var pathPoint = $.map(item.rings,function (item2) {
+            // var baduPoint = GPS.gps84_To_bd09(item2[0],item2[1]);
+            // console.log(JSON.stringify(item));
+            var baduPoint = gcoord.transform([item2[0],item2[1]],gcoord.WGS84,gcoord.BD09);
+            // console.log(JSON.stringify(item));
+            // return baduPoint.lat+','+baduPoint.lon+';'
+            return new BMap.Point(baduPoint[0],baduPoint[1]);
+        });
+        /*if(index <2){
+            console.log(JSON.stringify(pathPoint.join('')));
+        }*/
+        //区名
+        // console.log(item.attributes.District);
+        //名字
+        console.log(item.attributes.Name);
+        // console.log(item.attributes.secondary);
+
+        // return {'attributes':item.attributes,'pathPoint':pathPoint.join('')};
+        return {'attributes':item.attributes,'pathPoint':pathPoint};
+    });
+
+
+
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");    // 创建Map实例
+    map.centerAndZoom(new BMap.Point(113.333463,23.116295), 12);  // 初始化地图,设置中心点坐标和地图级别
+    map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+    map.setCurrentCity("苏州");          // 设置地图显示的城市 此项是必须设置的
+
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    map.enableContinuousZoom(true);    //启用地图惯性拖拽，默认禁用
+
+    map.addControl(new BMap.NavigationControl());  //添加默认缩放平移控件
+    map.addControl(new BMap.ScaleControl({ anchor: BMAP_ANCHOR_BOTTOM_LEFT })); //向地图中添加比例尺控件
+    //------------------------ 显示镇级范围 ------------------
+    var polygons = [];
+
+    function getBoundary() {
+
+
+
+        colors = ["#fff492", "#fff492", "#98d057", "#e19ee6", "#1ad3da", "#ffc11d", "#98e800", "#b95817", "#03a9f4", "#39d0a4", "#8bbb53"];
+
+        var pointArray = [];
+
+
+        $.map(gzvVillageData,function (item,index) {
+            var ply = new BMap.Polygon(item.pathPoint, { strokeWeight: 2, strokeColor: "#ff0000" }); //建立多边形覆盖物
+            ply.setFillColor(colors[index])   //设置多边形的填充颜色
+            ply.setFillOpacity(0.35);
+
+            polygons.push(ply);  //加入多边形数组，以之后获取多边形边界点集
+
+            //if (i == 3)
+            //{
+            //    ply.enableEditing();  //范围可编辑 【编辑的时候开启】
+            //}
+
+            // var labelOption = {offset:new BMap.Size(0,0), position:ply.getBounds().getCenter()};
+            var labelOption = {offset:new BMap.Size(0,0), position:ply.getBounds().getCenter()};
+            var label = new BMap.Label(item.attributes.Name,labelOption);
+            label.setStyle({
+                // color : "#000000",
+                color : "#ff0000",
+                fontSize : "12px",
+                fontFamily:"微软雅黑",
+                border:"0px",
+                backgroundColor:"none"
+            });
+            map.addOverlay(label); //添加覆盖物
+
+
+            map.addOverlay(ply);  //添加覆盖物
+            pointArray = pointArray.concat(ply.getPath());
+        });
+
+
+        map.setViewport(pointArray);    //调整视野
+        addlabel();
+    }
+
+    setTimeout(function () {
+        getBoundary();
+    }, 2000);
+
+    function addlabel() {
+        var pointArray = [
+            new BMap.Point(120.384935, 31.063241),  //东山镇
+            new BMap.Point(120.484461, 31.140899),  //临湖镇
+            new BMap.Point(120.528582, 31.159412),  //横泾镇
+            new BMap.Point(120.588424, 31.216319),  //越溪镇
+            new BMap.Point(120.486159, 31.241906),  //胥口镇
+            new BMap.Point(120.500029, 31.281492),  //木渎镇
+            new BMap.Point(120.403673, 31.240549),  //香山镇
+            new BMap.Point(120.288866, 31.131733),  //金庭镇
+            new BMap.Point(120.387959, 31.306318),  //光福镇
+            new BMap.Point(120.818048, 31.251493)   //甪直镇
+        ];
+        var optsArray = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+        var labelArray = [];
+        var contentArray = [
+            "东山镇", "临湖镇", "横泾镇", "越溪镇", "胥口镇", "木渎镇", "香山镇","金庭镇","光福镇", "甪直镇"];
+        for (var i = 0; i < pointArray.length; i++) {
+            optsArray[i].position = pointArray[i];
+            labelArray[i] = new BMap.Label(contentArray[i], optsArray[i]);
+            labelArray[i].setStyle({
+                color: "red",
+                fontSize: "12px",
+                height: "20px",
+                lineHeight: "20px",
+                fontFamily: "微软雅黑"
+            });
+            map.addOverlay(labelArray[i]);
+        }
+    }
+
+    //获取编辑后的边界点集【编辑完后，可以通过 button 来触发这个方法】
+    function getpoints() {
+        for (var j = 0; j < polygons.length; j++) {
+            var polyline =polygons[j];
+            var pts = polyline.getPath();
+
+            var sss = "";
+            for (var i = 0; i < pts.length; i++) {
+                sss += pts[i].lng + "," + pts[i].lat + ";";
+            }
+            console.log(sss);   //【将点集输出到控制台】
+        }
+
+        alert('已输出边界点集合!');
+    }
+</script>
+</body>
+</html>

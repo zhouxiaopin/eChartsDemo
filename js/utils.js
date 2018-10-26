@@ -53,7 +53,7 @@ var GPS = {
         {
             wgsLat = (mLat + pLat) / 2;
             wgsLon = (mLon + pLon) / 2;
-            var tmp = this.gcj_encrypt(wgsLat, wgsLon)
+            var tmp = this.gcj_encrypt(wgsLat, wgsLon);
             dLat = tmp.lat - gcjLat;
             dLon = tmp.lon - gcjLon;
             if ((Math.abs(dLat) < threshold) && (Math.abs(dLon) < threshold))
@@ -67,6 +67,11 @@ var GPS = {
         //console.log(i);
         return { 'lat': wgsLat, 'lon': wgsLon };
     },
+    //gps84_To_bd09
+    gps84_To_bd09:function (wgsLat, wgsLon) {
+       var en =  this.gcj_encrypt(wgsLat, wgsLon);
+         return this.bd_encrypt(en.lat,en.lon);
+    },
     //GCJ-02 to BD-09
     bd_encrypt: function (gcjLat, gcjLon)
     {
@@ -76,6 +81,10 @@ var GPS = {
         bdLon = z * Math.cos(theta) + 0.0065;
         bdLat = z * Math.sin(theta) + 0.006;
         return { 'lat': bdLat, 'lon': bdLon };
+    },
+    wgsb4_bd:function(wgsLat, wgsLon){
+        var gcj = this.gcj_encrypt(wgsLat, wgsLon);
+        return this.bd_encrypt(gcj.lat,gcj.lon);
     },
     //BD-09 to GCJ-02
     bd_decrypt: function (bdLat, bdLon)
