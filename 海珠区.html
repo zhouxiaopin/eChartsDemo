@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>广州行政区域规划</title>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #allmap{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+<div id="allmap"></div>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=fdv5gclnF2HSnNyKm4Dj3aVuLUGMLUZ1" ></script>
+<script type="text/javascript" src="./js/jquery-3.1.1.min.js" ></script>
+<script type="text/javascript" src="./js/utils.js" ></script>
+<script type="text/javascript">
+    /*************************************************/
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");    // 创建Map实例
+    map.centerAndZoom(new BMap.Point(113.333463,23.116295), 12);  // 初始化地图,设置中心点坐标和地图级别
+    map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+    map.setCurrentCity("广州");          // 设置地图显示的城市 此项是必须设置的
+
+    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    map.enableContinuousZoom(true);    //启用地图惯性拖拽，默认禁用
+
+    map.addControl(new BMap.NavigationControl());  //添加默认缩放平移控件
+    map.addControl(new BMap.ScaleControl({ anchor: BMAP_ANCHOR_BOTTOM_LEFT })); //向地图中添加比例尺控件
+    /***********叠加广州行政区开始**********/
+    var displayBoundary = function () {
+//            var cities = [
+//                {color : "rgba(254,169,1,0.8)",name : "广州市"}
+//            ];
+        var cities = [
+            {color : "#3EAFFF",name : "海珠区"}
+        ];
+        // var cities = [
+        //     {color : "#3CB035",name : "越秀区"},
+        //     {color : "#3CB035",name : "荔湾区"},
+        //     {color : "#3CB035",name : "天河区"},
+        //     {color : "#3CB035",name : "东圃镇"},
+        //     {color : "#3CB035",name : "海珠区"},
+        //     {color : "#3CB035",name : "白云区"},
+        //     {color : "#3CB035",name : "黄埔区"},
+        //     {color : "#3CB035",name : "花都区"},
+        //     {color : "#3CB035",name : "罗岗区"},
+        //     {color : "#3CB035",name : "南沙区"},
+        //     {color : "#3CB035",name : "番禺区"},
+        //     {color : "#3CB035",name : "增城区"},
+        //     {color : "#3CB035",name : "从化区"}
+        // ];
+        var json;
+        for (var j = 0; j < cities.length; j++) {
+            json = cities[j]; //城市的集合
+            getBoundary(json);
+        }
+    };
+
+    /***********叠加广州行政区结束**********/
+
+    /*************************************************/
+
+    /***********获取边界开始**********/
+    var getBoundary = function(json) {
+        var _Boundary = new BMap.Boundary();
+        _Boundary.get(json.name, function(rs) { //获取行政区域
+            var count = rs.boundaries.length; //行政区域的点有多少个
+            for (var i = 0; i < count; i++) {
+                var ply = new BMap.Polygon(rs.boundaries[0], {
+                    strokeWeight : 2,
+                    strokeOpacity : 1,
+                    strokeColor : json.color,
+                    fillColor : json.color, //控制覆盖物的颜色
+                    fillOpacity : 0.1   //控制覆盖物的透明度
+                }); //建立多边形覆盖物
+                map.addOverlay(ply); //添加覆盖物
+                // var labelOption = {offset:new BMap.Size(0,0), position:ply.getBounds().getCenter()};
+                // var label = new BMap.Label(json.name,labelOption);
+                // label.setStyle({
+                //     color : "#ffffff",
+                //     fontSize : "12px",
+                //     fontFamily:"微软雅黑",
+                //     border:"0px",
+                //     backgroundColor:"none"
+                // });
+                // bmap.addOverlay(label); //添加覆盖物
+            }
+        });
+    };
+    /***********获取边界结束**********/
+
+    displayBoundary();
+</script>
+</body>
+</html>
